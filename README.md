@@ -32,7 +32,32 @@ Labels are already define in the image to work with Traefik.
 To use it in production just run the container :
 
 ```bash
-$ docker run -d --restart always guillaumebriday/traefik-custom-error-pages
+$ docker run -d --restart always romancin/traefik-custom-error-pages
+```
+
+This container will run with this labels by default:
+```
+labels:
+  - "traefik.http.routers.catchall_router.entrypoints=web"
+  - "traefik.http.routers.catchall_router.rule=HostRegexp(`{catchall:.*}`)"
+  - "traefik.http.routers.catchall_router.priority=1"
+  - "traefik.http.routers.catchall_router.service=catchall_service@docker"
+  - "traefik.http.routers.catchall_router_ssl.entrypoints=websecure"
+  - "traefik.http.routers.catchall_router_ssl.rule=HostRegexp(`{catchall:.*}`)"
+  - "traefik.http.routers.catchall_router_ssl.priority=1"
+  - "traefik.http.routers.catchall_router_ssl.tls=true"
+  - "traefik.http.routers.catchall_router_ssl.service=catchall_service@docker"
+  - "traefik.http.middlewares.errorpage.errors.status=400-599"
+  - "traefik.http.middlewares.errorpage.errors.service=catchall_service@docker"
+  - "traefik.http.middlewares.errorpage.errors.query=/{status}.html"
+  - "traefik.http.services.catchall_service.loadbalancer.server.port=80"
+```
+
+To use it, on the container that you want to use the "errorpage" middleware, add:
+```
+labels:
+  - "traefik.http.routers.myrouter.middlewares=errorpage"
+
 ```
 
 ## Build the image
@@ -48,18 +73,11 @@ As you can see in the Dockerfile, I use [Nginx](https://www.nginx.com/) as Web s
 
 For traefik, I hardcoded [Labels](https://docs.traefik.io/user-guide/docker-and-lets-encrypt/#labels) in the Dockerfile.
 
-You will find in this article [https://www.techjunktrunk.com/docker/2017/11/03/traefik-default-server-catch-all](https://www.techjunktrunk.com/docker/2017/11/03/traefik-default-server-catch-all/) why I set up `priority` and `rule` this way.
-
-```ini
-LABEL traefik.frontend.priority="1"
-LABEL traefik.frontend.rule="HostRegexp:{catchall:.*}"
-```
-
 It's very useful because this container will respond to all requests only if there is no container with a real rule.
 
 ## Credits
 
-I used the [Laravel](https://laravel.com/) default HTTP error pages.
+Thanks to guillaumebriday for creating the project and Jakob-em for forking it to apply inline files for css and svg.
 
 ## Contributing
 
