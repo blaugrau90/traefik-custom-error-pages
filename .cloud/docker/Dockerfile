@@ -8,6 +8,7 @@ RUN jekyll build
 # nginx
 FROM nginx:alpine as nginx
 
+LABEL traefik.enable=true
 LABEL traefik.http.routers.catchall_router.entrypoints=web
 LABEL traefik.http.routers.catchall_router.rule=HostRegexp(`{catchall:.*}`)
 LABEL traefik.http.routers.catchall_router.priority=1
