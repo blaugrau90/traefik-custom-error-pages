@@ -10,11 +10,11 @@ RUN jekyll build
 FROM nginx:alpine as nginx
 
 LABEL traefik.enable=true
-LABEL traefik.http.routers.catchall_router.entrypoints=web
+LABEL traefik.http.routers.catchall_router.entrypoints=http
 LABEL traefik.http.routers.catchall_router.rule=HostRegexp(`{catchall:.*}`)
 LABEL traefik.http.routers.catchall_router.priority=1
 LABEL traefik.http.routers.catchall_router.service=catchall_service@docker
-LABEL traefik.http.routers.catchall_router_ssl.entrypoints=websecure
+LABEL traefik.http.routers.catchall_router_ssl.entrypoints=https
 LABEL traefik.http.routers.catchall_router_ssl.rule=HostRegexp(`{catchall:.*}`)
 LABEL traefik.http.routers.catchall_router_ssl.priority=1
 LABEL traefik.http.routers.catchall_router_ssl.tls=true
